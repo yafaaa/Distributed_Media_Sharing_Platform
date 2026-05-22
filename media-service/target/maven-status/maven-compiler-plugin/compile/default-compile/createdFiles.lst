@@ -1,0 +1,9 @@
+com\platform\media\config\AsyncConfig.class
+com\platform\media\model\MediaAsset$MediaAssetBuilder.class
+com\platform\media\repository\MediaRepository.class
+com\platform\media\model\MediaAsset.class
+com\platform\media\service\StorageService.class
+com\platform\media\service\MediaService.class
+com\platform\media\service\ProcessingService.class
+com\platform\media\MediaServiceApplication.class
+com\platform\media\controller\MediaController.class
