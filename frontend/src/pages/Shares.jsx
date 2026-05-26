@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Copy, Link as LinkIcon, Trash2, ArrowRight } from 'lucide-react';
+import { Copy, Link as LinkIcon, Trash2, ArrowRight, ExternalLink } from 'lucide-react';
 import api from '../api';
 
 export default function Shares() {
@@ -23,6 +23,27 @@ export default function Shares() {
         navigator.clipboard.writeText(url);
         toast.success("Link copied to clipboard!");
     }
+
+    const handleDownload = async (mediaId) => {
+        try {
+            // First get media details to get filename
+            const mediaRes = await api.get(`/media/${mediaId}`);
+            const filename = mediaRes.data.data.fileName;
+
+            const response = await api.get(`/media/download/${mediaId}`, {
+                responseType: 'blob',
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            toast.error('Could not open file');
+        }
+    };
 
     const TableCell = ({ children, isHeader = false }) => {
         const Tag = isHeader ? 'th' : 'td';
@@ -98,6 +119,13 @@ export default function Shares() {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center space-x-2">
+                                            <button 
+                                                onClick={() => handleDownload(s.mediaId)}
+                                                className="text-slate-400 hover:text-green-600 font-medium p-2 rounded-lg hover:bg-green-50 transition-colors"
+                                                title="Open File"
+                                            >
+                                                <ExternalLink className="w-4 h-4"/>
+                                            </button>
                                             <button 
                                                 onClick={() => copyToClipboard(s.shareToken)}
                                                 className="text-slate-400 hover:text-indigo-600 font-medium p-2 rounded-lg hover:bg-indigo-50 transition-colors"

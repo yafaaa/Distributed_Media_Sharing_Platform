@@ -7,17 +7,14 @@ spring:
   cloud:
     gateway:
       globalcors:
+        add-to-chain: true
         corsConfigurations:
           '[/**]':
-            allowedOrigins: "http://localhost:3000"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
+            exposedHeaders: "*"
       routes:
         - id: auth-service
           uri: http://localhost:8081

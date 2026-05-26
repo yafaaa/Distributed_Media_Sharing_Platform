@@ -1,13 +1,15 @@
 package com.platform.media.service;
 
-import com.platform.common.exception.ResourceNotFoundException;
-import com.platform.media.model.MediaAsset;
-import com.platform.media.repository.MediaRepository;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.platform.common.exception.ResourceNotFoundException;
+import com.platform.media.model.MediaAsset;
+import com.platform.media.repository.MediaRepository;
 
 @Service
 public class MediaService {
@@ -51,5 +53,32 @@ public class MediaService {
 
     public List<MediaAsset> getUserMedia(Long ownerId) {
         return mediaRepository.findByOwnerId(ownerId);
+    }
+
+    public Path getFilePath(Long id) {
+        MediaAsset asset = getMedia(id);
+        return Path.of(asset.getOriginalPath());
+    }
+
+    public void openFileOnDesktop(Long id) {
+        MediaAsset asset = getMedia(id);
+        try {
+            java.io.File file = new java.io.File(asset.getOriginalPath());
+            if (java.awt.Desktop.isDesktopSupported()) {
+                java.awt.Desktop.getDesktop().open(file);
+            } else {
+                // Fallback for environments where Desktop is not supported
+                String os = System.getProperty("os.name").toLowerCase();
+                if (os.contains("win")) {
+                    Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start", "", file.getAbsolutePath()});
+                } else if (os.contains("mac")) {
+                    Runtime.getRuntime().exec(new String[]{"open", file.getAbsolutePath()});
+                } else {
+                    Runtime.getRuntime().exec(new String[]{"xdg-open", file.getAbsolutePath()});
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Could not open file: " + e.getMessage());
+        }
     }
 }

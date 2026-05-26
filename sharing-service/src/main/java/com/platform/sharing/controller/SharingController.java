@@ -41,7 +41,7 @@ public class SharingController {
     }
 
     @GetMapping("/access/{token}")
-    public ResponseEntity<ApiResponse<Share>> getShareByToken(@PathVariable String token) {
+    public ResponseEntity<ApiResponse<Share>> getShareByToken(@PathVariable("token") String token) {
         return ResponseEntity.ok(ApiResponse.success("Share details found", sharingService.getShareByToken(token)));
     }
 

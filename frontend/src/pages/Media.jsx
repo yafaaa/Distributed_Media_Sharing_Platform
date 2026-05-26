@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { UploadCloud, File, Image as ImageIcon, Send, X } from 'lucide-react';
+import { UploadCloud, File, Image as ImageIcon, Send, X, ExternalLink } from 'lucide-react';
 import api from '../api';
 
 export default function Media() {
@@ -45,7 +45,7 @@ export default function Media() {
 
     const openShareModal = (m) => {
         setShareMediaId(m.id);
-        setShareMediaLabel(m.originalFilename);
+        setShareMediaLabel(m.fileName);
         setRecipientEmail('');
         setShareModalOpen(true);
     }
@@ -63,6 +63,32 @@ export default function Media() {
             toast.error('Share failed: ' + (err.response?.data?.message || err.message));
         }
     };
+
+    const handleDownload = async (id, filename) => {
+        try {
+            const response = await api.get(`/media/download/${id}`, {
+                responseType: 'blob',
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            toast.error('Download failed');
+        }
+    };
+
+    const handleOpen = async (id) => {
+        try {
+            await api.get(`/media/open/${id}`);
+            toast.success('Opening file in native application...');
+        } catch (err) {
+            toast.error('Could not open file natively');
+        }
+    }
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -108,15 +134,18 @@ export default function Media() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {mediaList.map(m => (
                             <div key={m.id} className="group relative bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition-all overflow-hidden flex flex-col items-center">
-                                <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                                    <button onClick={() => openShareModal(m)} className="bg-indigo-600 text-white px-4 py-2 rounded-full font-medium shadow-lg hover:bg-indigo-500 flex items-center transform translate-y-4 group-hover:translate-y-0 transition-all">
+                                <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center backdrop-blur-[2px] space-y-2">
+                                    <button onClick={() => openShareModal(m)} className="bg-indigo-600 text-white px-4 py-2 rounded-full font-medium shadow-lg hover:bg-indigo-500 flex items-center transform translate-y-4 group-hover:translate-y-0 transition-all w-28 justify-center">
                                         <Send className="w-4 h-4 mr-2"/> Share
+                                    </button>
+                                    <button onClick={() => handleOpen(m.id)} className="bg-white text-slate-900 px-4 py-2 rounded-full font-medium shadow-lg hover:bg-slate-100 flex items-center transform translate-y-4 group-hover:translate-y-0 transition-all w-28 justify-center">
+                                        <ExternalLink className="w-4 h-4 mr-2"/> Open
                                     </button>
                                 </div>
                                 <div className="h-24 w-24 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 text-slate-400">
                                     {m.contentType?.includes('image') ? <ImageIcon className="w-10 h-10"/> : <File className="w-10 h-10"/>}
                                 </div>
-                                <h4 className="font-semibold text-slate-800 truncate w-full text-center" title={m.originalFilename}>{m.originalFilename}</h4>
+                                <h4 className="font-semibold text-slate-800 truncate w-full text-center" title={m.fileName}>{m.fileName}</h4>
                                 <span className="text-xs text-slate-400 mt-1 uppercase tracking-wider">{m.contentType}</span>
                             </div>
                         ))}

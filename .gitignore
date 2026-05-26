@@ -1,0 +1,51 @@
+# Master .gitignore for Maven + React Microservices Project
+
+# [Common/OS Junk]
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+.idea/
+.vscode/
+*.swp
+
+# [Java / Maven]
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# [Database]
+data/
+*.db
+*.lock.db
+*.mv.db
+*.trace.db
+
+# [Storage/Uploads]
+uploads/
+segments/
+temp/
+
+# [Node / Frontend]
+node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+.eslintcache
+
+# [Spring Boot]
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache

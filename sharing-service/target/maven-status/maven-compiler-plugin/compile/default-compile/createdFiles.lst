@@ -1,7 +1,0 @@
-com\platform\sharing\SharingServiceApplication.class
-com\platform\sharing\controller\SharingController.class
-com\platform\sharing\service\SharingService.class
-com\platform\sharing\dto\ShareRequest.class
-com\platform\sharing\model\Share$ShareBuilder.class
-com\platform\sharing\repository\ShareRepository.class
-com\platform\sharing\model\Share.class

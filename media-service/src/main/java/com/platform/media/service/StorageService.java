@@ -1,16 +1,18 @@
 package com.platform.media.service;
 
-import com.platform.common.exception.PlatformException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.platform.common.exception.PlatformException;
+
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class StorageService {
@@ -50,7 +52,9 @@ public class StorageService {
             throw new PlatformException("Failed to store file: " + e.getMessage());
         }
     }
-
+    public Path load(String filename) {
+        return originalPath.resolve(filename);
+    }
     public Path getOriginalPath(String fileName) {
         return originalPath.resolve(fileName);
     }
