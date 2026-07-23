@@ -1,6 +1,7 @@
 package com.platform.gateway.filter;
 
 import javax.crypto.SecretKey;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -62,8 +63,14 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     userId = claims.getSubject(); // Fallback to subject if userId claim is missing
                 }
 
+                String correlationId = request.getHeaders().getFirst(Constants.CORRELATION_ID_HEADER);
+                if (correlationId == null) {
+                    correlationId = UUID.randomUUID().toString();
+                }
+
                 ServerHttpRequest modifiedRequest = request.mutate()
                         .header(Constants.USER_ID_HEADER, userId)
+                        .header(Constants.CORRELATION_ID_HEADER, correlationId)
                         .build();
 
                 return chain.filter(exchange.mutate().request(modifiedRequest).build());

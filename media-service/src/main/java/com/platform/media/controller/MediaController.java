@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.platform.common.dto.ApiResponse;
+import com.platform.common.exception.PlatformException;
 import com.platform.common.util.Constants;
 import com.platform.media.model.MediaAsset;
 import com.platform.media.service.MediaService;
@@ -39,9 +40,11 @@ public class MediaController {
             @RequestParam("file") MultipartFile file,
             HttpServletRequest request) {
         
-        // In a real gateway setup, this ID comes from the X-Auth-User-Id header
         String userIdHeader = request.getHeader(Constants.USER_ID_HEADER);
-        Long userId = (userIdHeader != null) ? Long.parseLong(userIdHeader) : 1L; // Fallback for dev
+        if (userIdHeader == null) {
+            throw new PlatformException("Unauthorized: Missing user ID header");
+        }
+        Long userId = Long.parseLong(userIdHeader);
 
         MediaAsset asset = mediaService.uploadMedia(file, userId);
         return ResponseEntity.ok(ApiResponse.success("Media uploaded and processing started", asset));
@@ -55,7 +58,10 @@ public class MediaController {
     @GetMapping("/user/all")
     public ResponseEntity<ApiResponse<List<MediaAsset>>> getUserMedia(HttpServletRequest request) {
         String userIdHeader = request.getHeader(Constants.USER_ID_HEADER);
-        Long userId = (userIdHeader != null) ? Long.parseLong(userIdHeader) : 1L;
+        if (userIdHeader == null) {
+             throw new PlatformException("Unauthorized: Missing user ID header");
+        }
+        Long userId = Long.parseLong(userIdHeader);
 
         return ResponseEntity.ok(ApiResponse.success("User media retrieved", mediaService.getUserMedia(userId)));
     }

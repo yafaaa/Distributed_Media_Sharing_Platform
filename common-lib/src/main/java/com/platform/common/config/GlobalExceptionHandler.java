@@ -11,26 +11,55 @@ import com.platform.common.dto.ApiResponse;
 import com.platform.common.exception.PlatformException;
 import com.platform.common.exception.ResourceNotFoundException;
 
+/**
+ * Global exception handler for the platform.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    /** Logger instance. */
+    private static final Logger LOG = LoggerFactory.getLogger(
+            GlobalExceptionHandler.class);
 
+    /**
+     * Handles ResourceNotFoundException.
+     *
+     * @param ex the exception
+     * @return the response entity
+     */
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNotFoundException(ResourceNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(ex.getMessage()));
+    public final ResponseEntity<ApiResponse<Void>> handleNotFoundException(
+            final ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ex.getMessage()));
     }
 
+    /**
+     * Handles PlatformException.
+     *
+     * @param ex the exception
+     * @return the response entity
+     */
     @ExceptionHandler(PlatformException.class)
-    public ResponseEntity<ApiResponse<Void>> handlePlatformException(PlatformException ex) {
-        log.error("Platform error: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(ex.getMessage()));
+    public final ResponseEntity<ApiResponse<Void>> handlePlatformException(
+            final PlatformException ex) {
+        LOG.error("Platform error: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
     }
 
+    /**
+     * Handles general exceptions.
+     *
+     * @param ex the exception
+     * @return the response entity
+     */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGeneralException(Exception ex) {
-        log.error("Unexpected error occurred", ex);
+    public final ResponseEntity<ApiResponse<Void>> handleGeneralException(
+            final Exception ex) {
+        LOG.error("Unexpected error occurred", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error("An unexpected error occurred: " + ex.getMessage()));
+                .body(ApiResponse.error("An unexpected error occurred: "
+                        + ex.getMessage()));
     }
 }
